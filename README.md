@@ -62,6 +62,7 @@ gcloud run deploy devex-assistant \
 <img width="422" height="709" alt="Screenshot 2026-02-22 at 5 01 10 PM" src="https://github.com/user-attachments/assets/704f329b-fab0-4215-8bb2-e28e46fcd6b6" />
 <img width="415" height="693" alt="Screenshot 2026-02-22 at 3 51 10 PM" src="https://github.com/user-attachments/assets/fe10e343-8c73-4a60-b020-a8d27662346e" />
 <img width="410" height="701" alt="Screenshot 2026-02-22 at 3 51 19 PM" src="https://github.com/user-attachments/assets/08249c86-70ff-4291-9a71-631b704348c8" />
+<img width="410" height="737" alt="Screenshot 2026-02-22 at 10 42 18 PM" src="https://github.com/user-attachments/assets/0c80b397-b484-4de7-92e3-1211cf9cc90a" />
 
 
  
