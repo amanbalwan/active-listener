@@ -49,7 +49,7 @@ Keep your conversational responses short and empathetic.
 """
 
 model = genai.GenerativeModel(
-    model_name='gemini-2.5-flash',
+    model_name='gemini-1.5-flash',
     tools=[log_engineering_ticket],
     system_instruction=system_instruction
 )
