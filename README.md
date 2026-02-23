@@ -5,7 +5,7 @@ An intelligent internal tool designed to capture and analyze developer friction 
 ## 🚀 Live Demo Architecture
 The application is built with a serverless architecture for maximum scalability and zero maintenance.
 
-* **Frontend:** Apple-inspired minimalist UI (HTML5/CSS3/JavaScript).
+* **Frontend:** Minimalist UI (HTML5/CSS3/JavaScript).
 * **Backend:** FastAPI (Python 3.11) hosted on **Google Cloud Run**.
 * **Intelligence:** Gemini 1.5 Flash (via Google Generative AI SDK).
 * **Database:** Google Cloud Firestore (NoSQL) in Native Mode.
