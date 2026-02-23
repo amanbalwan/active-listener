@@ -7,7 +7,7 @@ The application is built with a serverless architecture for maximum scalability 
 
 * **Frontend:** Minimalist UI (HTML5/CSS3/JavaScript).
 * **Backend:** FastAPI (Python 3.11) hosted on **Google Cloud Run**.
-* **Intelligence:** Gemini 1.5 Flash (via Google Generative AI SDK).
+* **Intelligence:** Gemini 2.5 Flash (via Google Generative AI SDK).
 * **Database:** Google Cloud Firestore (NoSQL) in Native Mode.
 * **CI/CD:** Automated builds via **Google Cloud Build** and **Artifact Registry**.
 
