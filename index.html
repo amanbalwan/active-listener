@@ -4,48 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevEx Assistant</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
       :root {
         --bg-color: #f5f5f7;
-        --text-primary: #1d1d1f;
-        --text-secondary: #86868b;
         --accent-color: #0071e3;
         --bubble-user: #0071e3;
         --bubble-agent: #e5e5ea;
       }
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
+        font-family: -apple-system, sans-serif;
         background-color: var(--bg-color);
-        color: var(--text-primary);
         margin: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        -webkit-font-smoothing: antialiased;
       }
       .chat-container {
         width: 100%;
         max-width: 400px;
-        height: 80vh;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: saturate(180%) blur(20px);
-        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        height: 85vh;
+        background: white;
         border-radius: 24px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.5);
       }
       .header {
         padding: 20px;
         text-align: center;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #eee;
         font-weight: 600;
-        font-size: 1.1rem;
       }
       .chat-box {
         flex: 1;
@@ -56,101 +47,61 @@
         gap: 12px;
       }
       .message {
-        max-width: 75%;
+        max-width: 80%;
         padding: 12px 16px;
         border-radius: 18px;
         font-size: 0.95rem;
         line-height: 1.4;
-        animation: fadeIn 0.3s ease-out;
-        /* Removed the problematic word-wrap and white-space rules here */
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
       }
       .user-message {
-        background-color: var(--bubble-user);
+        background: var(--bubble-user);
         color: white;
         align-self: flex-end;
-        border-bottom-right-radius: 4px;
       }
       .agent-message {
-        background-color: var(--bubble-agent);
-        color: var(--text-primary);
+        background: var(--bubble-agent);
+        color: black;
         align-self: flex-start;
-        border-bottom-left-radius: 4px;
       }
       .input-area {
         padding: 16px;
-        background: rgba(255, 255, 255, 0.8);
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: 1px solid #eee;
         display: flex;
         gap: 10px;
-        align-items: flex-end;
       }
       textarea {
         flex: 1;
         padding: 12px 16px;
         border-radius: 20px;
-        border: 1px solid #d2d2d7;
-        background: #ffffff;
-        font-size: 0.95rem;
+        border: 1px solid #ddd;
         outline: none;
-        transition: border-color 0.2s;
         resize: none;
+        font-size: 0.95rem;
         font-family: inherit;
-        overflow-y: hidden;
-        line-height: 1.4;
-        min-height: 20px;
-        max-height: 120px;
-        box-sizing: border-box;
-      }
-      textarea:focus {
-        border-color: var(--accent-color);
       }
       button {
-        background-color: var(--accent-color);
+        background: var(--accent-color);
         color: white;
         border: none;
         border-radius: 20px;
-        padding: 0 20px;
-        height: 44px;
-        font-weight: 600;
+        padding: 0 15px;
         cursor: pointer;
-        transition:
-          transform 0.1s,
-          opacity 0.2s;
-      }
-      button:active {
-        transform: scale(0.95);
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
       }
     </style>
   </head>
   <body>
     <div class="chat-container">
       <div class="header">DevEx Assistant</div>
-      <div class="chat-box" id="chat-box">
+      <div id="chat-box" class="chat-box">
         <div class="message agent-message">
-          Hi there. I'm here to listen. Are you running into any friction with
-          your tools or processes today?
+          Hi! I'm here to listen. Any tool friction today?
         </div>
       </div>
       <div class="input-area">
         <textarea
           id="user-input"
           rows="1"
-          placeholder="Type your feedback..."
-          onkeydown="handleKeyPress(event)"
+          placeholder="Type feedback..."
         ></textarea>
         <button id="send-btn" onclick="sendMessage()">Send</button>
       </div>
@@ -158,59 +109,53 @@
 
     <script>
       const sessionId = Math.random().toString(36).substring(7);
-
       const input = document.getElementById("user-input");
-      input.addEventListener("input", function () {
-        this.style.height = "auto";
-        this.style.height = this.scrollHeight + "px";
-      });
 
       async function sendMessage() {
-        const chatBox = document.getElementById("chat-box");
-        const btn = document.getElementById("send-btn");
         const message = input.value.trim();
         if (!message) return;
 
         appendMessage(message, "user-message");
-
         input.value = "";
-        input.style.height = "auto";
-        input.disabled = true;
-        btn.disabled = true;
 
         try {
-          const response = await fetch("/chat", {
+          const res = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ session_id: sessionId, message: message }),
           });
-
-          const data = await response.json();
-          appendMessage(data.reply, "agent-message");
-        } catch (error) {
-          appendMessage("Connection error. Please try again.", "agent-message");
-        } finally {
-          input.disabled = false;
-          btn.disabled = false;
-          input.focus();
+          const data = await res.json();
+          // Fallback logic to prevent blank boxes
+          appendMessage(
+            data.reply || "I'm sorry, I'm having trouble responding.",
+            "agent-message",
+          );
+        } catch {
+          appendMessage("Connection error. Try again.", "agent-message");
         }
       }
 
       function appendMessage(text, className) {
         const chatBox = document.getElementById("chat-box");
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `message ${className}`;
-        msgDiv.textContent = text;
-        chatBox.appendChild(msgDiv);
+        const div = document.createElement("div");
+        div.className = `message ${className}`;
+
+        if (className === "agent-message") {
+          div.innerHTML = marked.parse(text);
+        } else {
+          div.textContent = text;
+        }
+
+        chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
       }
 
-      function handleKeyPress(e) {
+      input.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           sendMessage();
         }
-      }
+      });
     </script>
   </body>
 </html>
