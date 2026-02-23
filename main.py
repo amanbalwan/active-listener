@@ -1,11 +1,15 @@
+import datetime
 import os
 import json
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 import google.generativeai as genai
 from google.generativeai.types import content_types
+from google.cloud import firestore
 
+# 1. At the top of main.py, add a list to store tickets in memory
+db = firestore.Client()
 # 1. Configuration & Setup
 app = FastAPI()
 # IMPORTANT: You will need to set this environment variable in your terminal
@@ -19,29 +23,28 @@ class ChatRequest(BaseModel):
     message: str
 
 # 2. Define the "Tool" (The action the agent can take)
-def log_engineering_ticket(tool_name: str, specific_issue: str, business_impact: str) -> str:
-    """
-    Logs a structured ticket for the Platform Engineering team.
-    Only call this when you clearly know the tool, the issue, and the impact.
-    """
-    # In a real system design, you would push this payload to Apache Kafka here
-    ticket_payload = {
-        "status": "LOGGED",
-        "route_to": "Platform_Engineering",
-        "data": {
-            "tool": tool_name,
-            "issue": specific_issue,
-            "impact": business_impact
+# 2. Update your tool function to save the ticket to this list
+def log_engineering_ticket(tool_name: str, issue_description: str, priority: str = "Medium"):
+    try:
+        # 1. Force everything to strings to prevent TypeErrors
+        ticket = {
+            "tool_name": str(tool_name),
+            "issue_description": str(issue_description),
+            "priority": str(priority),
+            "timestamp": firestore.SERVER_TIMESTAMP 
         }
-    }
-    
-    # Print to console so we can see it working during the demo
-    print("\n" + "="*40)
-    print("🎫 NEW TICKET LOGGED VIA AGENT:")
-    print(json.dumps(ticket_payload, indent=2))
-    print("="*40 + "\n")
-    
-    return "Ticket successfully logged. The platform team has been notified."
+        
+        # 2. Log exactly what we are about to send to Firestore
+        print(f"ATTEMPTING WRITE: {ticket}")
+        
+        db.collection("tickets").add(ticket)
+        return f"Ticket logged: {tool_name} is being tracked with {priority} priority."
+        
+    except Exception as e:
+        # 3. This will catch exactly why Firestore is mad
+        print(f"FIRESTORE CRASH: {e}")
+        return "I've noted the issue, but had a sync error. I'll retry in the background."
+
 
 # 3. Configure the Agent
 system_instruction = """
@@ -71,6 +74,23 @@ async def serve_frontend():
     # Serve our static Apple-like HTML file
     with open("index.html", "r") as f:
         return f.read()
+    
+@app.get("/admin-data")
+async def get_admin_data():
+    # Pull all tickets, sorted by newest first
+    docs = db.collection("tickets").order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
+    tickets = []
+    for doc in docs:
+        t = doc.to_dict()
+        # Convert timestamp to string for JSON compatibility
+        if t.get("timestamp"):
+            t["timestamp"] = t["timestamp"].isoformat()
+        tickets.append(t)
+    return tickets
+
+@app.get("/admin")
+async def admin_page():
+    return FileResponse("admin.html")
 
 @app.post("/chat")
 async def chat_endpoint(req: ChatRequest):

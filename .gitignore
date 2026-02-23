@@ -1,0 +1,12 @@
+# Local Environment Secrets
+.env
+*.json
+
+# Python artifacts
+__pycache__/
+venv/
+.venv/
+.DS_Store
+
+# Google Cloud artifacts
+.gcloudignore
