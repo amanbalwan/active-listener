@@ -1,6 +1,6 @@
 # 🛠️ DevEx Assistant: AI-Powered Friction Logger
 
-An intelligent internal tool designed to capture and analyze developer friction in real-time. This project uses the **Gemini 1.5 Flash** model with **Function Calling** to transform unstructured chat complaints into structured, actionable engineering tickets stored in **Google Cloud Firestore**.
+An intelligent internal tool designed to capture and analyze developer friction in real-time. This project uses the **Gemini 2.5 Flash** model with **Function Calling** to transform unstructured chat complaints into structured, actionable engineering tickets stored in **Google Cloud Firestore**.
 
 ## 🚀 Live Demo Architecture
 The application is built with a serverless architecture for maximum scalability and zero maintenance.
