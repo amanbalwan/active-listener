@@ -55,3 +55,8 @@ gcloud run deploy devex-assistant \
   --region us-west1 \
   --allow-unauthenticated \
   --set-env-vars GEMINI_API_KEY="YOUR_API_KEY"
+
+
+## 🖥️ App Screenshots
+<img width="1894" height="1090" alt="image" src="https://github.com/user-attachments/assets/5b3e7d57-034b-4d1d-8c34-75067718e475" />
+
