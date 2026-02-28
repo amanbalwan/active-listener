@@ -2,6 +2,7 @@
 
 An intelligent internal tool designed to capture and analyze developer friction in real-time. This project uses the **Gemini 2.5 Flash** model with **Function Calling** to transform unstructured chat complaints into structured, actionable engineering tickets stored in **Google Cloud Firestore**.
 
+**Check YourSelf** <br>
 [Chatbot Link](https://devex-assistant-197345368030.us-west1.run.app) <br>
 [Manager Portal Link](https://devex-assistant-197345368030.us-west1.run.app/admin)
 
